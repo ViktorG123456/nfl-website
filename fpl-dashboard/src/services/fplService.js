@@ -7,7 +7,7 @@ export const fetchFPLData = async () => {
             .schema('dim')
             .from('players')
             .select('*')
-            .range(0, 9999); // Fetch up to 10,000 rows
+            .range(0, 9999);
 
         if (playersError) {
             console.error('Error fetching players:', playersError);
@@ -19,11 +19,10 @@ export const fetchFPLData = async () => {
             .schema('dim')
             .from('teams')
             .select('*')
-            .range(0, 9999); // Fetch up to 10,000 rows
+            .range(0, 9999);
 
         if (teamsError) {
             console.error('Error fetching teams:', teamsError);
-            // Continue without teams if error, will default to Unknown
         }
 
         // 3. Fetch Stats
@@ -42,26 +41,23 @@ const fetchStats = async () => {
         .schema('fact')
         .from('stats')
         .select('*')
-        .range(0, 9999); // Fetch up to 10,000 rows
+        .range(0, 9999);
 
     if (error) throw error;
     return data;
 };
 
 const processData = (players, stats, teams) => {
-    // Helper to find team name
     const teamMap = {};
     teams.forEach(t => {
         teamMap[t.teamkey] = t.teamshortname || t.teamfullname;
     });
 
-    // Helper to find team key for a player from stats (since dim.players lacks it)
     const playerTeamKeyMap = {};
     stats.forEach(s => {
         if (s.teamkey) playerTeamKeyMap[s.playerkey] = s.teamkey;
     });
 
-    // Map players
     const formattedPlayers = players.map(p => {
         const teamKey = playerTeamKeyMap[p.playerkey];
         const teamName = teamMap[teamKey] || 'Unknown';
@@ -74,9 +70,9 @@ const processData = (players, stats, teams) => {
         };
     });
 
-    // Map stats
     const formattedStats = stats.map(s => ({
         playerId: s.playerkey,
+        gameweek: s.gameweek,
         xG: Number(s.expectedgoals || 0),
         xA: Number(s.expectedassists || 0),
         goals: Number(s.goalsscored || 0),
