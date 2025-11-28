@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 const DataTable = ({ data }) => {
+    const [sortConfig, setSortConfig] = useState({ key: 'xG', direction: 'desc' });
+
     if (!data || data.length === 0) {
         return (
             <div className="card" style={{ textAlign: 'center', padding: '3rem' }}>
@@ -8,6 +10,34 @@ const DataTable = ({ data }) => {
             </div>
         );
     }
+
+    const handleSort = (key) => {
+        let direction = 'desc';
+        if (sortConfig.key === key && sortConfig.direction === 'desc') {
+            direction = 'asc';
+        }
+        setSortConfig({ key, direction });
+    };
+
+    const sortedData = [...data].sort((a, b) => {
+        const aVal = a[sortConfig.key];
+        const bVal = b[sortConfig.key];
+
+        if (sortConfig.direction === 'asc') {
+            return aVal > bVal ? 1 : -1;
+        } else {
+            return aVal < bVal ? 1 : -1;
+        }
+    });
+
+    const SortableHeader = ({ column, label }) => (
+        <th
+            onClick={() => handleSort(column)}
+            style={{ cursor: 'pointer', userSelect: 'none' }}
+        >
+            {label} {sortConfig.key === column && (sortConfig.direction === 'asc' ? '↑' : '↓')}
+        </th>
+    );
 
     return (
         <div className="card">
@@ -19,14 +49,14 @@ const DataTable = ({ data }) => {
                             <th>Player</th>
                             <th>Team</th>
                             <th>Pos</th>
-                            <th>xG</th>
-                            <th>xA</th>
-                            <th>Goals</th>
-                            <th>Assists</th>
+                            <SortableHeader column="xG" label="xG" />
+                            <SortableHeader column="xA" label="xA" />
+                            <SortableHeader column="goals" label="Goals" />
+                            <SortableHeader column="assists" label="Assists" />
                         </tr>
                     </thead>
                     <tbody>
-                        {data.map((row, index) => (
+                        {sortedData.map((row, index) => (
                             <tr key={index}>
                                 <td style={{ fontWeight: 600 }}>{row.name}</td>
                                 <td>{row.team}</td>
@@ -35,10 +65,14 @@ const DataTable = ({ data }) => {
                                         padding: '0.2rem 0.5rem',
                                         borderRadius: '4px',
                                         fontSize: '0.8rem',
-                                        backgroundColor: row.position === 'FWD' ? '#e90052' :
-                                            row.position === 'MID' ? '#00ff87' :
-                                                row.position === 'DEF' ? '#00ff87' : '#e7e7e7',
-                                        color: row.position === 'FWD' ? 'white' : '#37003c',
+                                        backgroundColor:
+                                            row.position === 'FWD' ? '#e90052' :
+                                                row.position === 'MID' ? '#00a0e9' :
+                                                    row.position === 'DEF' ? '#00ff87' :
+                                                        '#6c757d',
+                                        color:
+                                            row.position === 'DEF' ? '#37003c' :
+                                                'white',
                                         fontWeight: 'bold'
                                     }}>
                                         {row.position}

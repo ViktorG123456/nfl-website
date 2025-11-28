@@ -9,9 +9,12 @@ function App() {
   const [players, setPlayers] = useState([]);
   const [stats, setStats] = useState([]);
   const [teams, setTeams] = useState([]);
+  const [gameweeks, setGameweeks] = useState([]);
 
   const [selectedTeam, setSelectedTeam] = useState('All');
   const [selectedPlayer, setSelectedPlayer] = useState('All');
+  const [startGw, setStartGw] = useState(1);
+  const [endGw, setEndGw] = useState(38);
 
   // Fetch data on mount
   useEffect(() => {
@@ -25,6 +28,16 @@ function App() {
       // Extract unique teams
       const uniqueTeams = [...new Set(fetchedPlayers.map(p => p.team))].sort();
       setTeams(uniqueTeams);
+
+      // Extract unique gameweeks
+      const uniqueGameweeks = [...new Set(fetchedStats.map(s => s.gameweek))].sort((a, b) => a - b);
+      setGameweeks(uniqueGameweeks);
+
+      // Set initial gameweek range
+      if (uniqueGameweeks.length > 0) {
+        setStartGw(Math.min(...uniqueGameweeks));
+        setEndGw(Math.max(...uniqueGameweeks));
+      }
 
       setLoading(false);
     };
@@ -52,10 +65,13 @@ function App() {
   const aggregatedData = useMemo(() => {
     if (loading) return [];
 
-    // 1. Aggregate by player (no gameweek filtering)
+    // 1. Filter stats by gameweek range
+    const filteredStats = stats.filter(s => s.gameweek >= startGw && s.gameweek <= endGw);
+
+    // 2. Aggregate by player
     const playerStatsMap = {};
 
-    stats.forEach(stat => {
+    filteredStats.forEach(stat => {
       if (!playerStatsMap[stat.playerId]) {
         playerStatsMap[stat.playerId] = {
           xG: 0,
@@ -70,7 +86,7 @@ function App() {
       playerStatsMap[stat.playerId].assists += stat.assists;
     });
 
-    // 2. Combine with player info and filter
+    // 3. Combine with player info and filter
     let result = players.map(player => {
       const pStats = playerStatsMap[player.id] || { xG: 0, xA: 0, goals: 0, assists: 0 };
       return {
@@ -91,7 +107,7 @@ function App() {
     // Filter out players with 0 stats if desired, or keep them. 
     // For now, we keep them but maybe sort by xG descending
     return result.sort((a, b) => b.xG - a.xG);
-  }, [selectedTeam, selectedPlayer, players, stats, loading]);
+  }, [selectedTeam, selectedPlayer, startGw, endGw, players, stats, loading]);
 
   return (
     <div className="app">
@@ -117,6 +133,12 @@ function App() {
                 players={filteredPlayersList}
                 selectedPlayer={selectedPlayer}
                 onPlayerChange={setSelectedPlayer}
+                minGameweek={gameweeks.length > 0 ? Math.min(...gameweeks) : 1}
+                maxGameweek={gameweeks.length > 0 ? Math.max(...gameweeks) : 38}
+                startGw={startGw}
+                endGw={endGw}
+                onStartGwChange={setStartGw}
+                onEndGwChange={setEndGw}
               />
             </aside>
 

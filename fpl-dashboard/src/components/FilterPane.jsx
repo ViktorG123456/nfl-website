@@ -6,7 +6,13 @@ const FilterPane = ({
     onTeamChange,
     players,
     selectedPlayer,
-    onPlayerChange
+    onPlayerChange,
+    minGameweek,
+    maxGameweek,
+    startGw,
+    endGw,
+    onStartGwChange,
+    onEndGwChange
 }) => {
     return (
         <div className="card">
@@ -39,6 +45,38 @@ const FilterPane = ({
                         <option key={player.id} value={player.id}>{player.name}</option>
                     ))}
                 </select>
+            </div>
+
+            <div className="form-group">
+                <label className="label">Gameweek Range</label>
+                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                    <div style={{ flex: 1 }}>
+                        <label style={{ fontSize: '0.8rem', color: '#666', display: 'block', marginBottom: '0.25rem' }}>From</label>
+                        <input
+                            type="number"
+                            min={minGameweek}
+                            max={maxGameweek}
+                            className="select"
+                            value={startGw}
+                            onChange={(e) => onStartGwChange(Number(e.target.value))}
+                        />
+                    </div>
+                    <div style={{ flex: 1 }}>
+                        <label style={{ fontSize: '0.8rem', color: '#666', display: 'block', marginBottom: '0.25rem' }}>To</label>
+                        <input
+                            type="number"
+                            min={minGameweek}
+                            max={maxGameweek}
+                            className="select"
+                            value={endGw}
+                            onChange={(e) => onEndGwChange(Number(e.target.value))}
+                        />
+                    </div>
+                </div>
+                <div className="range-labels" style={{ marginTop: '0.5rem' }}>
+                    <span>GW {startGw}</span>
+                    <span>GW {endGw}</span>
+                </div>
             </div>
         </div>
     );
