@@ -4,8 +4,8 @@ export const fetchFPLData = async () => {
     try {
         // 1. Fetch Players
         const { data: playersData, error: playersError } = await supabase
-            .schema('dim')
-            .from('players')
+            .schema('dbo')
+            .from('dim_players')
             .select('*')
             .range(0, 9999);
 
@@ -16,8 +16,8 @@ export const fetchFPLData = async () => {
 
         // 2. Fetch Teams
         const { data: teamsData, error: teamsError } = await supabase
-            .schema('dim')
-            .from('teams')
+            .schema('dbo')
+            .from('dim_teams')
             .select('*')
             .range(0, 9999);
 
@@ -38,8 +38,8 @@ export const fetchFPLData = async () => {
 
 const fetchStats = async () => {
     const { data, error } = await supabase
-        .schema('fact')
-        .from('stats')
+        .schema('dbo')
+        .from('fact_stats')
         .select('*')
         .range(0, 9999);
 
