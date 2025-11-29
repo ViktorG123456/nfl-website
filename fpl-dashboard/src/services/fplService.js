@@ -36,6 +36,21 @@ export const fetchFPLData = async () => {
     }
 };
 
+export const fetchFixtures = async () => {
+    const { data, error } = await supabase
+        .schema('dbo')
+        .from('dim_fixtures')
+        .select('teamid, opponentteam, gameweek, teamdifficulty, ishome')
+        .eq('finished', false)
+        .order('gameweek', { ascending: true });
+
+    if (error) {
+        console.error('Error fetching fixtures:', error);
+        return [];
+    }
+    return data;
+};
+
 const fetchStats = async () => {
     const { data, error } = await supabase
         .schema('dbo')
@@ -81,6 +96,8 @@ const processData = (players, stats, teams) => {
 
     return {
         players: formattedPlayers,
-        stats: formattedStats
+        players: formattedPlayers,
+        stats: formattedStats,
+        teams: teams.map(t => ({ id: t.teamkey, name: t.teamshortname || t.teamfullname }))
     };
 };

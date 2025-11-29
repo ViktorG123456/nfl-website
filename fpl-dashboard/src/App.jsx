@@ -1,7 +1,8 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import FilterPane from './components/FilterPane';
 import DataTable from './components/DataTable';
-import { fetchFPLData } from './services/fplService';
+import FixtureAnalyzer from './components/FixtureAnalyzer';
+import { fetchFPLData, fetchFixtures } from './services/fplService';
 import './App.css';
 
 function App() {
@@ -10,6 +11,8 @@ function App() {
   const [stats, setStats] = useState([]);
   const [teams, setTeams] = useState([]);
   const [gameweeks, setGameweeks] = useState([]);
+  const [fixtures, setFixtures] = useState([]);
+  const [currentPage, setCurrentPage] = useState('dashboard');
 
   const [selectedTeam, setSelectedTeam] = useState('All');
   const [selectedPlayer, setSelectedPlayer] = useState('All');
@@ -20,14 +23,17 @@ function App() {
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
-      const { players: fetchedPlayers, stats: fetchedStats } = await fetchFPLData();
+      const { players: fetchedPlayers, stats: fetchedStats, teams: fetchedTeams } = await fetchFPLData();
+      const fetchedFixtures = await fetchFixtures();
 
       setPlayers(fetchedPlayers);
       setStats(fetchedStats);
+      setFixtures(fetchedFixtures);
+      setTeams(fetchedTeams);
 
       // Extract unique teams
-      const uniqueTeams = [...new Set(fetchedPlayers.map(p => p.team))].sort();
-      setTeams(uniqueTeams);
+      // const uniqueTeams = [...new Set(fetchedPlayers.map(p => p.team))].sort();
+      // setTeams(uniqueTeams);
 
       // Extract unique gameweeks
       const uniqueGameweeks = [...new Set(fetchedStats.map(s => s.gameweek))].sort((a, b) => a - b);
@@ -114,7 +120,20 @@ function App() {
       <header className="header">
         <div className="container header-content">
           <div className="logo">FPL Analysis</div>
-          <div style={{ fontSize: '0.9rem', opacity: 0.8 }}>Season 2024/25</div>
+          <nav className="nav-links">
+            <button
+              className={`nav-btn ${currentPage === 'dashboard' ? 'active' : ''}`}
+              onClick={() => setCurrentPage('dashboard')}
+            >
+              Dashboard
+            </button>
+            <button
+              className={`nav-btn ${currentPage === 'fixtures' ? 'active' : ''}`}
+              onClick={() => setCurrentPage('fixtures')}
+            >
+              Fixture Analyzer
+            </button>
+          </nav>
         </div>
       </header>
 
@@ -123,11 +142,11 @@ function App() {
           <div style={{ textAlign: 'center', padding: '4rem' }}>
             <div style={{ fontSize: '1.2rem', color: '#37003c' }}>Loading data from Supabase...</div>
           </div>
-        ) : (
+        ) : currentPage === 'dashboard' ? (
           <div className="dashboard-grid">
             <aside>
               <FilterPane
-                teams={teams}
+                teams={teams.map(t => t.name)}
                 selectedTeam={selectedTeam}
                 onTeamChange={setSelectedTeam}
                 players={filteredPlayersList}
@@ -146,6 +165,8 @@ function App() {
               <DataTable data={aggregatedData} />
             </section>
           </div>
+        ) : (
+          <FixtureAnalyzer teams={teams} fixtures={fixtures} />
         )}
       </main>
     </div>
