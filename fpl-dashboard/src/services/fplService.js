@@ -28,7 +28,10 @@ export const fetchFPLData = async () => {
         // 3. Fetch Stats
         const statsData = await fetchStats();
 
-        return processData(playersData, statsData, teamsData || []);
+        // 4. Fetch All Fixtures for mapping
+        const allFixtures = await fetchAllFixtures();
+
+        return processData(playersData, statsData, teamsData || [], allFixtures);
 
     } catch (error) {
         console.error('Error in fetchFPLData:', error);
@@ -40,7 +43,7 @@ export const fetchFixtures = async () => {
     const { data, error } = await supabase
         .schema('dbo')
         .from('dim_fixtures')
-        .select('teamid, opponentteam, gameweek, teamdifficulty, ishome')
+        .select('teamkey, opponentteam, gameweek, teamdifficulty, ishome')
         .eq('finished', false)
         .order('gameweek', { ascending: true });
 
@@ -62,11 +65,32 @@ const fetchStats = async () => {
     return data;
 };
 
-const processData = (players, stats, teams) => {
+const fetchAllFixtures = async () => {
+    const { data, error } = await supabase
+        .schema('dbo')
+        .from('dim_fixtures')
+        .select('fixturekey, opponentteam')
+        .range(0, 9999);
+
+    if (error) {
+        console.error('Error fetching all fixtures:', error);
+        return [];
+    }
+    return data;
+};
+
+const processData = (players, stats, teams, allFixtures) => {
     const teamMap = {};
     teams.forEach(t => {
         teamMap[t.teamkey] = t.teamshortname || t.teamfullname;
     });
+
+    const fixtureMap = {};
+    if (allFixtures) {
+        allFixtures.forEach(f => {
+            fixtureMap[f.fixturekey] = f.opponentteam;
+        });
+    }
 
     const playerTeamKeyMap = {};
     stats.forEach(s => {
@@ -81,6 +105,7 @@ const processData = (players, stats, teams) => {
             id: p.playerkey,
             name: p.fullname,
             team: teamName,
+            teamKey: teamKey,
             position: p.position
         };
     });
@@ -91,7 +116,9 @@ const processData = (players, stats, teams) => {
         xG: Number(s.expectedgoals || 0),
         xA: Number(s.expectedassists || 0),
         goals: Number(s.goalsscored || 0),
-        assists: Number(s.assists || 0)
+        assists: Number(s.assists || 0),
+        points: Number(s.points || 0),
+        opponent: fixtureMap[s.fixturekey] || '-'
     }));
 
     return {

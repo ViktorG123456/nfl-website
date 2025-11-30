@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const DataTable = ({ data }) => {
+const DataTable = ({ data, onRowClick }) => {
     const [sortConfig, setSortConfig] = useState({ key: 'xG', direction: 'desc' });
 
     if (!data || data.length === 0) {
@@ -57,7 +57,11 @@ const DataTable = ({ data }) => {
                     </thead>
                     <tbody>
                         {sortedData.map((row, index) => (
-                            <tr key={index}>
+                            <tr
+                                key={index}
+                                onClick={() => onRowClick && onRowClick(row)}
+                                style={{ cursor: onRowClick ? 'pointer' : 'default' }}
+                            >
                                 <td style={{ fontWeight: 600 }}>{row.name}</td>
                                 <td>{row.team}</td>
                                 <td>

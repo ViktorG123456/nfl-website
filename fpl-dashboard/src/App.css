@@ -31,6 +31,39 @@
     transition: all 0.2s ease;
 }
 
+/* Override header layout for centering */
+.header-content {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    /* Reset flex properties from index.css if needed, though grid overrides display */
+}
+
+.logo {
+    justify-self: start;
+}
+
+.nav-links {
+    justify-self: center;
+    display: flex;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.25rem;
+    border-radius: 2rem;
+}
+
+.nav-btn {
+    background: transparent;
+    color: rgba(255, 255, 255, 0.8);
+    border: none;
+    padding: 0.5rem 1.25rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 1.5rem;
+    transition: all 0.2s ease;
+}
+
 .nav-btn:hover {
     color: white;
     background: rgba(255, 255, 255, 0.1);
@@ -40,4 +73,152 @@
     color: var(--fpl-purple);
     background: var(--fpl-cyan);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+}
+
+.modal-content {
+    background: white;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #666;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.modal-close:hover {
+    background: #f0f0f0;
+    color: #333;
+}
+
+.modal-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid #eee;
+    background: #f8f9fa;
+    border-radius: 12px 12px 0 0;
+}
+
+.modal-header h2 {
+    margin: 0 0 0.5rem 0;
+    color: var(--fpl-purple);
+}
+
+.player-badges {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.team-badge {
+    background: #e9ecef;
+    color: #495057;
+}
+
+.pos-badge {
+    color: white;
+}
+
+.pos-FWD {
+    background: #e90052;
+}
+
+.pos-MID {
+    background: #00a0e9;
+}
+
+.pos-DEF {
+    background: #00ff87;
+    color: #37003c;
+}
+
+.pos-GK {
+    background: #e9ecef;
+    color: #495057;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.stats-table-container {
+    overflow-x: auto;
+}
+
+.stats-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.stats-table th,
+.stats-table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.stats-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #666;
+}
+
+.stats-table tr:last-child td {
+    border-bottom: none;
+}
+
+.font-bold {
+    font-weight: 700;
 }

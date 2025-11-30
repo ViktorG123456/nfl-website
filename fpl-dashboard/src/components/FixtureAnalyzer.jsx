@@ -10,8 +10,8 @@ const FixtureAnalyzer = ({ teams, fixtures }) => {
         if (!team) return [];
 
         // Filter fixtures for this team
-        // dim_fixtures has teamid which matches team.id (teamkey)
-        const teamFixtures = fixtures.filter(f => String(f.teamid) === String(team.id));
+        // dim_fixtures has teamkey which matches team.id (teamkey)
+        const teamFixtures = fixtures.filter(f => String(f.teamkey) === String(team.id));
 
         // Sort by gameweek (already sorted by API but good to be safe)
         // and take next 3
