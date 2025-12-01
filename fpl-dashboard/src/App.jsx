@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import FilterPane from './components/FilterPane';
 import DataTable from './components/DataTable';
 import FixtureAnalyzer from './components/FixtureAnalyzer';
+import PlayerDetailsModal from './components/PlayerDetailsModal';
 import { fetchFPLData, fetchFixtures } from './services/fplService';
 import './App.css';
 
@@ -16,6 +17,7 @@ function App() {
 
   const [selectedTeam, setSelectedTeam] = useState('All');
   const [selectedPlayer, setSelectedPlayer] = useState('All');
+  const [viewingPlayer, setViewingPlayer] = useState(null);
   const [startGw, setStartGw] = useState(1);
   const [endGw, setEndGw] = useState(38);
 
@@ -162,11 +164,23 @@ function App() {
             </aside>
 
             <section>
-              <DataTable data={aggregatedData} />
+              <DataTable
+                data={aggregatedData}
+                onRowClick={setViewingPlayer}
+              />
             </section>
           </div>
         ) : (
           <FixtureAnalyzer teams={teams} fixtures={fixtures} />
+        )}
+
+        {viewingPlayer && (
+          <PlayerDetailsModal
+            player={viewingPlayer}
+            stats={stats}
+            fixtures={fixtures}
+            onClose={() => setViewingPlayer(null)}
+          />
         )}
       </main>
     </div>
