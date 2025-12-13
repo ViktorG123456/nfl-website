@@ -222,3 +222,73 @@
 .font-bold {
     font-weight: 700;
 }
+
+/* Modal Tabs */
+.modal-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 2px solid #eee;
+    background: #f8f9fa;
+    padding: 0 1.5rem;
+}
+
+.tab-btn {
+    background: transparent;
+    border: none;
+    padding: 1rem 1.5rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #666;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s ease;
+    position: relative;
+    top: 2px;
+}
+
+.tab-btn:hover {
+    color: var(--fpl-purple);
+    background: rgba(55, 0, 60, 0.05);
+}
+
+.tab-btn.active {
+    color: var(--fpl-purple);
+    border-bottom-color: var(--fpl-purple);
+    background: white;
+}
+
+/* Difficulty Badges */
+.difficulty-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    min-width: 24px;
+    text-align: center;
+}
+
+.diff-1 {
+    background: #00ff87;
+    color: #37003c;
+}
+
+.diff-2 {
+    background: #01fc7c;
+    color: #37003c;
+}
+
+.diff-3 {
+    background: #e7e7e7;
+    color: #37003c;
+}
+
+.diff-4 {
+    background: #ff1751;
+    color: white;
+}
+
+.diff-5 {
+    background: #80072d;
+    color: white;
+}
