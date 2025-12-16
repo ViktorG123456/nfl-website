@@ -54,6 +54,22 @@ export const fetchFixtures = async () => {
     return data;
 };
 
+export const fetchPlayerFutureFixtures = async (playerTeamKey) => {
+    const { data, error } = await supabase
+        .schema('dbo')
+        .from('dim_fixtures')
+        .select('gameweek, opponentteam, teamdifficulty, ishome')
+        .eq('teamkey', playerTeamKey)
+        .eq('finished', false)
+        .order('gameweek', { ascending: true });
+
+    if (error) {
+        console.error('Error fetching player future fixtures:', error);
+        return [];
+    }
+    return data;
+};
+
 const fetchStats = async () => {
     const { data, error } = await supabase
         .schema('dbo')
